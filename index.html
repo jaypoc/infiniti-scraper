@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <style>
+    table { border:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
+    th { background-color: #999; }
+    td { border: 1px solid #eee;text-align: center; font-size:12px}
+    .price { font-size:.9em}
+    .price b { font-size:1.2em}
+  </style>
+</head>
+<body>
+
+  <table width="100%"  cellpadding=5 cellspacing=0 id="cartable">
+    <tr>
+      <th width="100">Image</th>
+      <th>Year</th>
+      <th>Model</th>
+      <th>Exterior / Interior</th>
+      <th>Mileage</th>
+      <th>Current Price</th>
+      <th>VIN</th>
+      <th>Dates</th>
+    </tr>
+  </table>
+
+</body>
+<script>
+  
+  cartr = function(car){
+
+    row = document.createElement("tr")
+    dates = document.createElement("td"); dates.innerHTML = datentime(car.created)+'<br/>to '+datentime(car.updated)
+    vin = document.createElement("td"); vin.innerHTML = car.vin+'<br/>Stock # '+car.stocknumber
+    year = document.createElement("td"); year.innerHTML = car.year
+    config = document.createElement("td"); config.innerHTML = car.config
+    mileage = document.createElement("td"); mileage.innerHTML = car.mileage
+    min_price = document.createElement("td"); min_price.innerHTML = '$'+numberWithCommas(car.price_min); 
+    max_price = document.createElement("td"); max_price.innerHTML = '$'+numberWithCommas(car.price_max);
+    price = document.createElement("td"); 
+    price.innerHTML = '$'+numberWithCommas(car.price_max)+'<br/><b>$'+numberWithCommas(car.price)+'</b><br/>$'+numberWithCommas(car.price_min); 
+    
+    stocknumber = document.createElement("td"); stocknumber.innerHTML = car.stocknumber
+    interior = document.createElement("td"); interior.innerHTML = car.exterior+' / '+car.interior
+    imageurl = document.createElement("td"); imageurl.innerHTML = '<img src="'+car.imageurl+'" width="200">'
+    
+    price.className = "price"
+
+    row.appendChild(imageurl)
+    row.appendChild(year)
+    row.appendChild(config)
+    row.appendChild(interior)
+    row.appendChild(mileage)
+    
+    row.appendChild(price)
+    
+    row.appendChild(vin)
+    
+    row.appendChild(dates)
+    return row;
+  }
+
+  function numberWithCommas(x) {
+    x = x.toString();
+    var pattern = /(-?\d+)(\d{3})/;
+    while (pattern.test(x))
+        x = x.replace(pattern, "$1,$2");
+    return x;
+  }
+
+  function datentime(x){
+    return moment(new Date(x)).format("ddd, M/DD/YYYY  h:mm a");
+  }
+
+  function compare_cars(a,b) {
+    const carA = a.created
+    const carB = b.created
+
+    let comparison = 0
+    if (carA > carB) { comparison = -1; }
+    else if (carA < carB) { comparison = 1; }
+    return comparison;
+  }
+
+  refreshData = function() {
+    $.ajax({
+      method: 'get',
+      url: 'cars.json',
+      success: function (data) { 
+        console.log 
+        data.cars.sort(compare_cars)
+        data.cars.forEach(car => {
+          document.getElementById("cartable").appendChild(cartr(car))
+        });
+      }
+    });
+  }
+
+  setTimeout(refreshData, 100);
+
+</script>
