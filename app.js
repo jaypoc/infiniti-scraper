@@ -60,7 +60,7 @@ let carURL = 'http://www.bommaritoinfiniti.com/VehicleSearchResults?search=preow
 
     carData.forEach( function(car)
       {
-          oldcar = db.get('cars').filter({vin: car.vin}).value()[0]
+          let oldcar = db.get('cars').filter({vin: car.vin}).value()[0]
           if ( db.get('cars').find({vin: car.vin}).value() )
             {
                 db.get('cars').find({vin: car.vin})
