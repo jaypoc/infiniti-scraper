@@ -6,12 +6,14 @@ const db = low(adapter);
 
 db.defaults({ cars: [] }).write();
 
-let carURL = 'http://www.bommaritoinfiniti.com/VehicleSearchResults?search=preowned&make=INFINITI&model=Q50&year=2018%2C2017';
+let carURLbase = 'https://www.bommaritoinfiniti.com';
+let carURL = `${carURLbase}/used-cars-ellisville-mo.html?Make=Infiniti&year=2019`;
 
 (async () => {
     
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
+
     try
       {    
         await page.setViewport({ width: 1920, height: 926 });
@@ -26,41 +28,43 @@ let carURL = 'http://www.bommaritoinfiniti.com/VehicleSearchResults?search=preow
 
     let carData = await page.evaluate(() => {
         let cars = [];
-        let carsElements = document.querySelectorAll('[itemtype="http://schema.org/Car"]');
-                
+        let carsElements = document.querySelectorAll('.srpVehicle');
         carsElements.forEach((carelement) => {
             let carJson = {};
             try 
               {
-                carJson.created       = new Date().toJSON();
-                carJson.updated       = new Date().toJSON();
-                carJson.year          = carelement.querySelector('[itemprop="vehicleModelDate"]').innerText;  
-                carJson.config        = carelement.querySelector('[itemprop="vehicleConfiguration"]').innerText;  
-                carJson.vin           = carelement.querySelector('[itemprop="vehicleIdentificationNumber"]').innerText;
-                carJson.mileage     = carelement.querySelector('[template="vehicleIdentitySpecs-miles"]').querySelector('.value').innerText;
-                carJson.exterior    = "Unknown"
-                carJson.interior    = carelement.querySelector('[template="vehicleIdentitySpecs-interior"]').querySelector('.value').innerText;
-                carJson.location    = carelement.querySelector('[template="vehicleIdentitySpecs-location"]').querySelector('.value').innerText;
-                carJson.stocknumber = carelement.querySelector('[template="vehicleIdentitySpecs-stockNumber"]').querySelector('.value').innerText;
-                carJson.imageurl     = carelement.querySelector('[itemprop="image"]').src;
-                carJson.price_min    = parseInt(carelement.querySelector('[itemprop="price"]').innerText.replace(/[^0-9.]/g,'')); 
-                carJson.price        = parseInt(carelement.querySelector('[itemprop="price"]').innerText.replace(/[^0-9.]/g,'')); 
-                carJson.price_max    = parseInt(carelement.querySelector('[itemprop="price"]').innerText.replace(/[^0-9.]/g,''));
+                carJson.created     = new Date().toJSON();
+                carJson.updated     = new Date().toJSON();
+                carJson.make        = carelement.dataset.make
+                carJson.model       = carelement.dataset.model
+                carJson.vin         = carelement.dataset.vin
+                carJson.year        = carelement.dataset.year
+                carJson.price       = carelement.dataset.price
+                carJson.msrp        = carelement.dataset.msrp
+                carJson.config      = carelement.dataset.trim
+                carJson.exterior    = carelement.dataset.extcolor
+                carJson.interior    = carelement.dataset.intcolor
+                carJson.engine      = carelement.dataset.engine
+                carJson.stocknumber = carelement.dataset.stocknum
+                carJson.price_min   = carelement.dataset.price
+                carJson.price       = carelement.dataset.price
+                carJson.price_max   = carelement.dataset.price
+                carJson.imageurl    = carelement.querySelector('.vehicleImg').dataset.img;
+                carJson.mileage     = carelement.querySelector('.mileageDisplay').innerText.replace(/[^0-9]/g, '');
               } 
             catch (exception) 
               {
-
+                console.log("exception")
               }
             cars.push(carJson);
         });
-    
         return cars;
     });
     
 
     carData.forEach( function(car)
       {
-          oldcar = db.get('cars').filter({vin: car.vin}).value()[0]
+          let oldcar = db.get('cars').filter({vin: car.vin}).value()[0]
           if ( db.get('cars').find({vin: car.vin}).value() )
             {
                 db.get('cars').find({vin: car.vin})

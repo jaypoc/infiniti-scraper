@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <head>
+  <title>Infiniti Scraper</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
   <style>
-    table { border:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
+    table { border:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; width: 100% }
     th { background-color: #999; }
     td { border: 1px solid #eee;text-align: center; font-size:12px}
     .price { font-size:.9em}
     .price b { font-size:1.2em}
+    #col-image { width 100px; }
   </style>
 </head>
 <body>
 
-  <table width="100%"  cellpadding=5 cellspacing=0 id="cartable">
+  <table id="cartable">
+    <caption>Infiniti Scraper</caption>
     <tr>
-      <th width="100">Image</th>
-      <th>Year</th>
-      <th>Model</th>
-      <th>Exterior / Interior</th>
-      <th>Mileage</th>
-      <th>Current Price</th>
-      <th>VIN</th>
-      <th>Dates</th>
+      <th id="col-image" scope="col" >Image</th>
+      <th id="col-year" scope="col">Year</th>
+      <th id="col-model" scope="col">Model</th>
+      <th id="col-exterior" scope="col">Exterior / Interior</th>
+      <th id="col-mileage" scope="col">Mileage</th>
+      <th id="col-current" scope="col">Current Price</th>
+      <th id="col-vin" scope="col">VIN</th>
+      <th id="col-dates" scope="col">Dates</th>
     </tr>
   </table>
 
@@ -43,7 +46,7 @@
     
     stocknumber = document.createElement("td"); stocknumber.innerHTML = car.stocknumber
     interior = document.createElement("td"); interior.innerHTML = car.exterior+' / '+car.interior
-    imageurl = document.createElement("td"); imageurl.innerHTML = '<img src="'+car.imageurl+'" width="200">'
+    imageurl = document.createElement("td"); imageurl.innerHTML = '<img src="https://www.bommaritoinfiniti.com'+car.imageurl+'" width="200">'
     
     price.className = "price"
 
