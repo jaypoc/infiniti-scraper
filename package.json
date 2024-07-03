@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.3",
+    "express": "^4.19.2",
     "lowdb": "^1.0.0",
-    "puppeteer": "^1.13.0"
+    "puppeteer": "^22.6.4"
   }
 }
